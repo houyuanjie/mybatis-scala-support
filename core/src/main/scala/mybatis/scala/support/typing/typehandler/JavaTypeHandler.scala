@@ -1,6 +1,6 @@
 package mybatis.scala.support.typing.typehandler
 
-import org.apache.ibatis.`type`.*
+import org.apache.ibatis.`type`.{TypeHandler as _, *}
 
 object JavaTypeHandler extends JavaTypeHandlerInstances
 

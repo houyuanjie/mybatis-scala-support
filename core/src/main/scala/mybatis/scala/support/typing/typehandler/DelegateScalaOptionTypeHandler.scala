@@ -1,6 +1,6 @@
 package mybatis.scala.support.typing.typehandler
 
-import org.apache.ibatis.`type`.{JdbcType, TypeHandler}
+import org.apache.ibatis.`type`.JdbcType
 
 import java.sql.{CallableStatement, PreparedStatement, ResultSet}
 

@@ -1,7 +1,7 @@
 package mybatis.scala.support.typing.typehandler
 
 import mybatis.scala.support.typing.{Boxed, Unboxed}
-import org.apache.ibatis.`type`.{JdbcType, TypeHandler}
+import org.apache.ibatis.`type`.JdbcType
 
 import java.sql.{CallableStatement, PreparedStatement, ResultSet}
 
