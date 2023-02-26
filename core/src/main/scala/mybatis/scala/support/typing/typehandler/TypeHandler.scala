@@ -2,10 +2,10 @@ package mybatis.scala.support.typing.typehandler
 
 import org.apache.ibatis.`type`.TypeHandler as MyBatisTypeHandler
 
-type TypeHandler[T] = MyBatisTypeHandler[T]
+trait TypeHandler[T] extends MyBatisTypeHandler[T]
 
 object TypeHandler extends TypeHandlerInstances:
-  def of[T](using typeHandler: TypeHandler[T]): TypeHandler[T] = typeHandler
+  inline def of[T](using typeHandler: TypeHandler[T]): TypeHandler[T] = typeHandler
 
 trait TypeHandlerInstances
     extends JavaTypeHandlerInstances
