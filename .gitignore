@@ -7,3 +7,8 @@
 
 # VS Code
 .code
+
+# IDE
+.bsp
+.bloop
+.metals

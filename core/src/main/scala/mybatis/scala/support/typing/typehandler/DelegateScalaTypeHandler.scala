@@ -30,7 +30,7 @@ class DelegateScalaTypeHandler[T, DelegateType](
 object DelegateScalaTypeHandler extends DelegateScalaTypeHandlerInstances
 
 trait DelegateScalaTypeHandlerInstances:
-  given [T, DelegateType](using
+  given genericDelegateScalaTypeHandler[T, DelegateType](using
       boxed: Boxed[T] { type Output = DelegateType },
       unboxed: Unboxed[T] { type Input = DelegateType },
       delegate: TypeHandler[DelegateType]

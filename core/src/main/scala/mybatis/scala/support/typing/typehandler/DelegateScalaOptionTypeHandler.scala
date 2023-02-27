@@ -23,7 +23,7 @@ class DelegateScalaOptionTypeHandler[T](delegate: TypeHandler[T]) extends TypeHa
 object DelegateScalaOptionTypeHandler extends DelegateScalaOptionTypeHandlerInstances
 
 trait DelegateScalaOptionTypeHandlerInstances:
-  given [T](using delegate: TypeHandler[T]): TypeHandler[scala.Option[T]] =
+  given genericDelegateScalaOptionTypeHandler[T](using delegate: TypeHandler[T]): TypeHandler[scala.Option[T]] =
     new DelegateScalaOptionTypeHandler[T](delegate)
 
 object DelegateScalaOptionTypeHandlerInstances extends DelegateScalaOptionTypeHandlerInstances
