@@ -20,10 +20,10 @@ public class SqlSessionManager {
         return sqlSessionFactory.getConfiguration();
     }
 
-    public <T> SqlSessionFunctionConsumer<T> readOnly(ExecutorType execType, TransactionIsolationLevel level) {
-        return new SqlSessionFunctionConsumer<T>() {
+    public <T> SqlSessionContext<T> readOnly(ExecutorType execType, TransactionIsolationLevel level) {
+        return new SqlSessionContext<T>() {
             @Override
-            public T accept(SqlSessionFunction<T> sqlSessionFunction) {
+            public T use(SqlSessionFunction<T> sqlSessionFunction) {
                 SqlSession sqlSession = sqlSessionFactory.openSession(execType, level);
 
                 try {
@@ -37,14 +37,14 @@ public class SqlSessionManager {
         };
     }
 
-    public <T> SqlSessionFunctionConsumer<T> readOnly() {
+    public <T> SqlSessionContext<T> readOnly() {
         return this.readOnly(ExecutorType.SIMPLE, null);
     }
 
-    public <T> SqlSessionFunctionConsumer<T> transaction(SqlSession sqlSession) {
-        return new SqlSessionFunctionConsumer<T>() {
+    public <T> SqlSessionContext<T> transaction(SqlSession sqlSession) {
+        return new SqlSessionContext<T>() {
             @Override
-            public T accept(SqlSessionFunction<T> sqlSessionFunction) {
+            public T use(SqlSessionFunction<T> sqlSessionFunction) {
                 try {
                     T result = sqlSessionFunction.apply(sqlSession);
                     sqlSession.commit();
@@ -65,40 +65,40 @@ public class SqlSessionManager {
         };
     }
 
-    public <T> SqlSessionFunctionConsumer<T> transaction(boolean autoCommit) {
+    public <T> SqlSessionContext<T> transaction(boolean autoCommit) {
         SqlSession sqlSession = sqlSessionFactory.openSession(autoCommit);
         return this.transaction(sqlSession);
     }
 
-    public <T> SqlSessionFunctionConsumer<T> transaction(Connection connection) {
+    public <T> SqlSessionContext<T> transaction(Connection connection) {
         SqlSession sqlSession = sqlSessionFactory.openSession(connection);
         return this.transaction(sqlSession);
     }
 
-    public <T> SqlSessionFunctionConsumer<T> transaction(TransactionIsolationLevel level) {
+    public <T> SqlSessionContext<T> transaction(TransactionIsolationLevel level) {
         SqlSession sqlSession = sqlSessionFactory.openSession(level);
         return this.transaction(sqlSession);
     }
 
-    public <T> SqlSessionFunctionConsumer<T> transaction(ExecutorType execType, boolean autoCommit) {
+    public <T> SqlSessionContext<T> transaction(ExecutorType execType, boolean autoCommit) {
         SqlSession sqlSession = sqlSessionFactory.openSession(execType, autoCommit);
         return this.transaction(sqlSession);
     }
 
-    public <T> SqlSessionFunctionConsumer<T> transaction(ExecutorType execType, Connection connection) {
+    public <T> SqlSessionContext<T> transaction(ExecutorType execType, Connection connection) {
         SqlSession sqlSession = sqlSessionFactory.openSession(execType, connection);
         return this.transaction(sqlSession);
     }
 
-    public <T> SqlSessionFunctionConsumer<T> transaction(ExecutorType execType, TransactionIsolationLevel level) {
+    public <T> SqlSessionContext<T> transaction(ExecutorType execType, TransactionIsolationLevel level) {
         SqlSession sqlSession = sqlSessionFactory.openSession(execType, level);
         return this.transaction(sqlSession);
     }
 
-    public <T> SqlSessionFunctionConsumer<T> managed(ExecutorType execType) {
-        return new SqlSessionFunctionConsumer<T>() {
+    public <T> SqlSessionContext<T> managed(ExecutorType execType) {
+        return new SqlSessionContext<T>() {
             @Override
-            public T accept(SqlSessionFunction<T> sqlSessionFunction) {
+            public T use(SqlSessionFunction<T> sqlSessionFunction) {
                 SqlSession sqlSession = sqlSessionFactory.openSession(execType);
 
                 try {
@@ -111,7 +111,7 @@ public class SqlSessionManager {
         };
     }
 
-    public <T> SqlSessionFunctionConsumer<T> managed() {
+    public <T> SqlSessionContext<T> managed() {
         return this.managed(ExecutorType.SIMPLE);
     }
 
