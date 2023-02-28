@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE configuration
+        PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-config.dtd">
+<configuration>
+    <typeHandlers>
+        <package name="mybatis.scala.support.typing.typehandlers"/>
+    </typeHandlers>
+    <objectFactory type="mybatis.scala.support.objecting.ScalaDefaultObjectFactory"/>
+    <objectWrapperFactory type="mybatis.scala.support.objecting.ScalaObjectWrapperFactory"/>
+
+    <environments default="simple">
+        <environment id="simple">
+            <transactionManager type="JDBC"/>
+            <dataSource type="POOLED">
+                <property name="driver" value="org.h2.Driver"/>
+                <property name="url" value="jdbc:h2:mem:db"/>
+                <property name="username" value="sa"/>
+                <property name="password" value=""/>
+            </dataSource>
+        </environment>
+    </environments>
+
+    <mappers>
+        <package name="simple.mapper"/>
+    </mappers>
+</configuration>

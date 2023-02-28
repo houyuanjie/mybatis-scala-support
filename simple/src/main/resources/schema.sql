@@ -1,0 +1,13 @@
+CREATE TABLE person(
+    id SERIAL PRIMARY KEY,
+    name VARCHAR(255) NOT NULL,
+    age INTEGER
+);
+
+CREATE TABLE pet(
+    id SERIAL PRIMARY KEY,
+    name VARCHAR(255) NOT NULL,
+    age INTEGER,
+    owner INTEGER NOT NULL,
+    FOREIGN KEY (owner) REFERENCES person(id)
+);

@@ -1,16 +1,15 @@
 plugins {
-    id('scala')
     id('java-library')
 }
+
+sourceCompatibility = JavaVersion.VERSION_1_8
+targetCompatibility = JavaVersion.VERSION_1_8
 
 repositories {
     mavenCentral()
 }
 
 dependencies {
-    implementation('org.scala-lang:scala3-library_3:3.2.2')
-
+    api('org.scala-lang:scala3-library_3:3.2.2')
     api('org.mybatis:mybatis:3.5.11')
-
-    testImplementation('org.scalameta:munit_3:1.0.0-M7')
 }
