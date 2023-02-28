@@ -8,7 +8,7 @@ object TypeHandler extends TypeHandlerInstances:
   inline def of[T](using typeHandler: TypeHandler[T]): TypeHandler[T] = typeHandler
 
 trait TypeHandlerInstances
-    extends JavaTypeHandlerInstances
+    extends DelegateJavaTypeHandlerInstances
     with DelegateScalaTypeHandlerInstances
     with DelegateScalaOptionTypeHandlerInstances
 
