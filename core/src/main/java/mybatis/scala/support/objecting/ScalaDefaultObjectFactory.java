@@ -9,7 +9,7 @@ public class ScalaDefaultObjectFactory extends DefaultObjectFactory {
     protected Class<?> resolveInterface(Class<?> type) {
         Class<?> resolved = super.resolveInterface(type);
 
-        if (resolved == Buffer.class) {
+        if (resolved == Seq.class) {
             resolved = ArrayBuffer.class;
         } else if (resolved == Set.class) {
             resolved = HashSet.class;
@@ -23,7 +23,7 @@ public class ScalaDefaultObjectFactory extends DefaultObjectFactory {
     @Override
     public <T> boolean isCollection(Class<T> type) {
         boolean collection = super.isCollection(type);
-        return collection || Buffer.class.isAssignableFrom(type) || Set.class.isAssignableFrom(type);
+        return collection || Seq.class.isAssignableFrom(type) || Set.class.isAssignableFrom(type);
     }
 
 }

@@ -1,6 +1,7 @@
 package mybatis.scala.support.objecting;
 
 import org.apache.ibatis.reflection.MetaObject;
+import org.apache.ibatis.reflection.wrapper.CollectionWrapper;
 import org.apache.ibatis.reflection.wrapper.MapWrapper;
 import org.apache.ibatis.reflection.wrapper.ObjectWrapper;
 import org.apache.ibatis.reflection.wrapper.ObjectWrapperFactory;
@@ -26,13 +27,13 @@ public class ScalaObjectWrapperFactory implements ObjectWrapperFactory {
         ObjectWrapper objectWrapper = null;
 
         if (object instanceof ArrayBuffer) {
-            ArrayBuffer<?> arrayBuffer = (ArrayBuffer<?>) object;
-            List<Object> list = (List<Object>) CollectionConverters.BufferHasAsJava(arrayBuffer).asJava();
-            objectWrapper = new ScalaCollectionObjectWrapper(metaObject, list);
+            ArrayBuffer<?> arrayBuffer = ((ArrayBuffer<?>) object);
+            List<?> list = CollectionConverters.BufferHasAsJava(arrayBuffer).asJava();
+            objectWrapper = new CollectionWrapper(metaObject, (List<Object>) list);
         } else if (object instanceof HashSet) {
             HashSet<?> hashSet = (HashSet<?>) object;
-            Set<Object> set = (Set<Object>) CollectionConverters.MutableSetHasAsJava(hashSet).asJava();
-            objectWrapper = new ScalaCollectionObjectWrapper(metaObject, set);
+            Set<?> set = CollectionConverters.MutableSetHasAsJava(hashSet).asJava();
+            objectWrapper = new CollectionWrapper(metaObject, (Set<Object>) set);
         } else if (object instanceof HashMap) {
             HashMap<?, ?> hashMap = (HashMap<?, ?>) object;
             Map<String, Object> map = (Map<String, Object>) CollectionConverters.MutableMapHasAsJava(hashMap).asJava();
