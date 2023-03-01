@@ -21,18 +21,11 @@ public class SqlSessionManager {
     }
 
     public <T> SqlSessionContext<T> readOnly(ExecutorType execType, TransactionIsolationLevel level) {
-        return new SqlSessionContext<T>() {
-            @Override
-            public T use(SqlSessionFunction<T> sqlSessionFunction) {
-                SqlSession sqlSession = sqlSessionFactory.openSession(execType, level);
-
-                try {
-                    T result = sqlSessionFunction.apply(sqlSession);
-                    sqlSession.rollback();
-                    return result;
-                } finally {
-                    sqlSession.close();
-                }
+        return sqlSessionFunction -> {
+            try (SqlSession sqlSession = sqlSessionFactory.openSession(execType, level)) {
+                T result = sqlSessionFunction.apply(sqlSession);
+                sqlSession.rollback();
+                return result;
             }
         };
     }
@@ -42,25 +35,21 @@ public class SqlSessionManager {
     }
 
     public <T> SqlSessionContext<T> transaction(SqlSession sqlSession) {
-        return new SqlSessionContext<T>() {
-            @Override
-            public T use(SqlSessionFunction<T> sqlSessionFunction) {
+        return sqlSessionFunction -> {
+            try {
+                T result = sqlSessionFunction.apply(sqlSession);
+                sqlSession.commit();
+                return result;
+            } catch (Exception commitException) {
                 try {
-                    T result = sqlSessionFunction.apply(sqlSession);
-                    sqlSession.commit();
-                    return result;
-                } catch (Throwable commitThrowable) {
-                    try {
-                        sqlSession.rollback();
-                    } catch (Throwable rollbackThrowable) {
-                        rollbackThrowable.addSuppressed(commitThrowable);
-                        throw rollbackThrowable;
-                    }
-
-                    throw commitThrowable;
-                } finally {
-                    sqlSession.close();
+                    sqlSession.rollback();
+                } catch (Exception rollbackException) {
+                    rollbackException.addSuppressed(commitException);
+                    throw rollbackException;
                 }
+                throw commitException;
+            } finally {
+                sqlSession.close();
             }
         };
     }
@@ -96,17 +85,9 @@ public class SqlSessionManager {
     }
 
     public <T> SqlSessionContext<T> managed(ExecutorType execType) {
-        return new SqlSessionContext<T>() {
-            @Override
-            public T use(SqlSessionFunction<T> sqlSessionFunction) {
-                SqlSession sqlSession = sqlSessionFactory.openSession(execType);
-
-                try {
-                    T result = sqlSessionFunction.apply(sqlSession);
-                    return result;
-                } finally {
-                    sqlSession.close();
-                }
+        return sqlSessionFunction -> {
+            try (SqlSession sqlSession = sqlSessionFactory.openSession(execType)) {
+                return sqlSessionFunction.apply(sqlSession);
             }
         };
     }

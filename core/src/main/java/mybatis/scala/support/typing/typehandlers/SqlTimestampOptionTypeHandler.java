@@ -1,14 +1,15 @@
 package mybatis.scala.support.typing.typehandlers;
 
 import mybatis.scala.support.typing.DelegateScalaOptionTypeHandler;
+import org.apache.ibatis.type.JdbcType;
+import org.apache.ibatis.type.MappedJdbcTypes;
 import org.apache.ibatis.type.SqlTimestampTypeHandler;
-import org.apache.ibatis.type.TypeHandler;
 
 import java.sql.Timestamp;
 
+@MappedJdbcTypes(JdbcType.TIMESTAMP)
 public class SqlTimestampOptionTypeHandler extends DelegateScalaOptionTypeHandler<Timestamp> {
-    @Override
-    public TypeHandler<Timestamp> delegate() {
-        return new SqlTimestampTypeHandler();
+    public SqlTimestampOptionTypeHandler() {
+        super(new SqlTimestampTypeHandler());
     }
 }

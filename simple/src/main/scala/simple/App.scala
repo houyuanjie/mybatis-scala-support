@@ -24,6 +24,7 @@ object App:
     sqlSessionManager.readOnly().use { ss =>
       val mapper = ss.getMapper(classOf[PersonMapper])
       println("selectAll: " + mapper.selectAll())
+      println("selectAllName: " + mapper.selectAllName())
       println("selectOne(0): " + mapper.selectOne(0))
       println("selectOne(1): " + mapper.selectOne(1))
       println("selectOne(2): " + mapper.selectOne(2))

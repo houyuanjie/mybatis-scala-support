@@ -11,5 +11,5 @@ repositories {
 
 dependencies {
     api('org.scala-lang:scala3-library_3:3.2.2')
-    api('org.mybatis:mybatis:3.5.11')
+    api('org.mybatis:mybatis:3.5.12')
 }

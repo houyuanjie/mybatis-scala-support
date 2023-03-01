@@ -2,11 +2,12 @@ package mybatis.scala.support.typing.typehandlers;
 
 import mybatis.scala.support.typing.DelegateScalaOptionTypeHandler;
 import org.apache.ibatis.type.IntegerTypeHandler;
-import org.apache.ibatis.type.TypeHandler;
+import org.apache.ibatis.type.JdbcType;
+import org.apache.ibatis.type.MappedJdbcTypes;
 
+@MappedJdbcTypes(JdbcType.INTEGER)
 public class IntegerOptionTypeHandler extends DelegateScalaOptionTypeHandler<Integer> {
-    @Override
-    public TypeHandler<Integer> delegate() {
-        return new IntegerTypeHandler();
+    public IntegerOptionTypeHandler() {
+        super(new IntegerTypeHandler());
     }
 }

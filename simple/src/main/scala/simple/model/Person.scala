@@ -2,8 +2,14 @@ package simple.model
 
 import scala.beans.BeanProperty
 
-case class Person(
-    @BeanProperty var id: Int,
+class Person(
+    @BeanProperty var id: java.lang.Integer,
     @BeanProperty var name: String,
-    @BeanProperty var age: Option[Int]
-)
+    @BeanProperty var age: java.lang.Integer
+) {
+
+  def this() = this(null, null, null)
+
+  override def toString = s"Person($id, $name, $age)"
+
+}

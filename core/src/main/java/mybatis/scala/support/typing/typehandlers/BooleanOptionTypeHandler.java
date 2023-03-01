@@ -2,11 +2,12 @@ package mybatis.scala.support.typing.typehandlers;
 
 import mybatis.scala.support.typing.DelegateScalaOptionTypeHandler;
 import org.apache.ibatis.type.BooleanTypeHandler;
-import org.apache.ibatis.type.TypeHandler;
+import org.apache.ibatis.type.JdbcType;
+import org.apache.ibatis.type.MappedJdbcTypes;
 
+@MappedJdbcTypes({JdbcType.BOOLEAN, JdbcType.BIT})
 public class BooleanOptionTypeHandler extends DelegateScalaOptionTypeHandler<Boolean> {
-    @Override
-    public TypeHandler<Boolean> delegate() {
-        return new BooleanTypeHandler();
+    public BooleanOptionTypeHandler() {
+        super(new BooleanTypeHandler());
     }
 }

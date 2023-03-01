@@ -17,9 +17,17 @@ trait PersonMapper:
 
   @Select(
     Array(
+      "SELECT name",
+      "FROM person"
+    )
+  )
+  def selectAllName(): mutable.Buffer[String]
+
+  @Select(
+    Array(
       "SELECT *",
       "FROM person",
       "WHERE id=#{id}"
     )
   )
-  def selectOne(@Param("id") id: Int): Option[Person]
+  def selectOne(@Param("id") id: Int): Person

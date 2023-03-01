@@ -1,28 +1,42 @@
 package mybatis.scala.support.objecting;
 
-import mybatis.scala.support.objecting.objectwrappers.ArrayBufferObjectWrapper;
-import mybatis.scala.support.objecting.objectwrappers.HashSetObjectWrapper;
 import org.apache.ibatis.reflection.MetaObject;
+import org.apache.ibatis.reflection.wrapper.MapWrapper;
 import org.apache.ibatis.reflection.wrapper.ObjectWrapper;
 import org.apache.ibatis.reflection.wrapper.ObjectWrapperFactory;
 import scala.collection.mutable.ArrayBuffer;
+import scala.collection.mutable.HashMap;
 import scala.collection.mutable.HashSet;
+import scala.jdk.CollectionConverters;
+
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 public class ScalaObjectWrapperFactory implements ObjectWrapperFactory {
 
     @Override
     public boolean hasWrapperFor(Object object) {
-        return object instanceof ArrayBuffer || object instanceof HashSet;
+        return object instanceof ArrayBuffer || object instanceof HashSet || object instanceof HashMap;
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public ObjectWrapper getWrapperFor(MetaObject metaObject, Object object) {
         ObjectWrapper objectWrapper = null;
 
         if (object instanceof ArrayBuffer) {
-            objectWrapper = new ArrayBufferObjectWrapper(metaObject, (ArrayBuffer) object);
+            ArrayBuffer<?> arrayBuffer = (ArrayBuffer<?>) object;
+            List<Object> list = (List<Object>) CollectionConverters.BufferHasAsJava(arrayBuffer).asJava();
+            objectWrapper = new ScalaCollectionObjectWrapper(metaObject, list);
         } else if (object instanceof HashSet) {
-            objectWrapper = new HashSetObjectWrapper(metaObject, (HashSet) object);
+            HashSet<?> hashSet = (HashSet<?>) object;
+            Set<Object> set = (Set<Object>) CollectionConverters.MutableSetHasAsJava(hashSet).asJava();
+            objectWrapper = new ScalaCollectionObjectWrapper(metaObject, set);
+        } else if (object instanceof HashMap) {
+            HashMap<?, ?> hashMap = (HashMap<?, ?>) object;
+            Map<String, Object> map = (Map<String, Object>) CollectionConverters.MutableMapHasAsJava(hashMap).asJava();
+            objectWrapper = new MapWrapper(metaObject, map);
         } else {
             throw new IllegalArgumentException("Type (" + object.getClass().getName() + ") is NOT supported.");
         }

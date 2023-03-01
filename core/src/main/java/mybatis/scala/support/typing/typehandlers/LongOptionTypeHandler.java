@@ -1,12 +1,13 @@
 package mybatis.scala.support.typing.typehandlers;
 
 import mybatis.scala.support.typing.DelegateScalaOptionTypeHandler;
+import org.apache.ibatis.type.JdbcType;
 import org.apache.ibatis.type.LongTypeHandler;
-import org.apache.ibatis.type.TypeHandler;
+import org.apache.ibatis.type.MappedJdbcTypes;
 
+@MappedJdbcTypes(JdbcType.BIGINT)
 public class LongOptionTypeHandler extends DelegateScalaOptionTypeHandler<Long> {
-    @Override
-    public TypeHandler<Long> delegate() {
-        return new LongTypeHandler();
+    public LongOptionTypeHandler() {
+        super(new LongTypeHandler());
     }
 }

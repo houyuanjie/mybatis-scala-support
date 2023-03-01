@@ -1,10 +1,7 @@
 package mybatis.scala.support.objecting;
 
 import org.apache.ibatis.reflection.factory.DefaultObjectFactory;
-import scala.collection.mutable.ArrayBuffer;
-import scala.collection.mutable.Buffer;
-import scala.collection.mutable.HashSet;
-import scala.collection.mutable.Set;
+import scala.collection.mutable.*;
 
 public class ScalaDefaultObjectFactory extends DefaultObjectFactory {
 
@@ -16,7 +13,8 @@ public class ScalaDefaultObjectFactory extends DefaultObjectFactory {
             resolved = ArrayBuffer.class;
         } else if (resolved == Set.class) {
             resolved = HashSet.class;
-        } else {
+        } else if (resolved == Map.class) {
+            resolved = HashMap.class;
         }
 
         return resolved;
