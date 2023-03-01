@@ -24,7 +24,7 @@ public class ScalaObjectWrapperFactory implements ObjectWrapperFactory {
     @SuppressWarnings("unchecked")
     @Override
     public ObjectWrapper getWrapperFor(MetaObject metaObject, Object object) {
-        ObjectWrapper objectWrapper = null;
+        ObjectWrapper objectWrapper;
 
         if (object instanceof ArrayBuffer) {
             ArrayBuffer<?> arrayBuffer = ((ArrayBuffer<?>) object);

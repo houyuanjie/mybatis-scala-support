@@ -20,79 +20,92 @@ public class SqlSessionManager {
         return sqlSessionFactory.getConfiguration();
     }
 
-    public <T> SqlSessionContext<T> readOnly(ExecutorType execType, TransactionIsolationLevel level) {
-        return sqlSessionFunction -> {
-            try (SqlSession sqlSession = sqlSessionFactory.openSession(execType, level)) {
-                T result = sqlSessionFunction.apply(sqlSession);
-                sqlSession.rollback();
-                return result;
+    public SqlSessionContext readOnly(ExecutorType execType, TransactionIsolationLevel level) {
+        SqlSession sqlSession = sqlSessionFactory.openSession(execType, level);
+        return new SqlSessionContext(sqlSession) {
+            @Override
+            public <T> T use(SqlSessionFunction<T> sqlSessionFunction) {
+                try {
+                    T result = sqlSessionFunction.apply(sqlSession);
+                    sqlSession.rollback();
+                    return result;
+                } finally {
+                    sqlSession.close();
+                }
             }
         };
     }
 
-    public <T> SqlSessionContext<T> readOnly() {
+    public SqlSessionContext readOnly() {
         return this.readOnly(ExecutorType.SIMPLE, null);
     }
 
-    public <T> SqlSessionContext<T> transaction(SqlSession sqlSession) {
-        return sqlSessionFunction -> {
-            try {
-                T result = sqlSessionFunction.apply(sqlSession);
-                sqlSession.commit();
-                return result;
-            } catch (Exception commitException) {
+    public SqlSessionContext transaction(SqlSession sqlSession) {
+        return new SqlSessionContext(sqlSession) {
+            @Override
+            public <T> T use(SqlSessionFunction<T> sqlSessionFunction) {
                 try {
-                    sqlSession.rollback();
-                } catch (Exception rollbackException) {
-                    rollbackException.addSuppressed(commitException);
-                    throw rollbackException;
+                    T result = sqlSessionFunction.apply(sqlSession);
+                    sqlSession.commit();
+                    return result;
+                } catch (Exception commitException) {
+                    try {
+                        sqlSession.rollback();
+                    } catch (Exception rollbackException) {
+                        rollbackException.addSuppressed(commitException);
+                        throw rollbackException;
+                    }
+                    throw commitException;
+                } finally {
+                    sqlSession.close();
                 }
-                throw commitException;
-            } finally {
-                sqlSession.close();
             }
         };
     }
 
-    public <T> SqlSessionContext<T> transaction(boolean autoCommit) {
+    public SqlSessionContext transaction(boolean autoCommit) {
         SqlSession sqlSession = sqlSessionFactory.openSession(autoCommit);
         return this.transaction(sqlSession);
     }
 
-    public <T> SqlSessionContext<T> transaction(Connection connection) {
+    public SqlSessionContext transaction(Connection connection) {
         SqlSession sqlSession = sqlSessionFactory.openSession(connection);
         return this.transaction(sqlSession);
     }
 
-    public <T> SqlSessionContext<T> transaction(TransactionIsolationLevel level) {
+    public SqlSessionContext transaction(TransactionIsolationLevel level) {
         SqlSession sqlSession = sqlSessionFactory.openSession(level);
         return this.transaction(sqlSession);
     }
 
-    public <T> SqlSessionContext<T> transaction(ExecutorType execType, boolean autoCommit) {
+    public SqlSessionContext transaction(ExecutorType execType, boolean autoCommit) {
         SqlSession sqlSession = sqlSessionFactory.openSession(execType, autoCommit);
         return this.transaction(sqlSession);
     }
 
-    public <T> SqlSessionContext<T> transaction(ExecutorType execType, Connection connection) {
+    public SqlSessionContext transaction(ExecutorType execType, Connection connection) {
         SqlSession sqlSession = sqlSessionFactory.openSession(execType, connection);
         return this.transaction(sqlSession);
     }
 
-    public <T> SqlSessionContext<T> transaction(ExecutorType execType, TransactionIsolationLevel level) {
+    public SqlSessionContext transaction(ExecutorType execType, TransactionIsolationLevel level) {
         SqlSession sqlSession = sqlSessionFactory.openSession(execType, level);
         return this.transaction(sqlSession);
     }
 
-    public <T> SqlSessionContext<T> managed(ExecutorType execType) {
-        return sqlSessionFunction -> {
-            try (SqlSession sqlSession = sqlSessionFactory.openSession(execType)) {
-                return sqlSessionFunction.apply(sqlSession);
+    public SqlSessionContext managed(ExecutorType execType) {
+        SqlSession sqlSession = sqlSessionFactory.openSession(execType);
+        return new SqlSessionContext(sqlSession) {
+            @Override
+            public <T> T use(SqlSessionFunction<T> sqlSessionFunction) {
+                try (sqlSession) {
+                    return sqlSessionFunction.apply(sqlSession);
+                }
             }
         };
     }
 
-    public <T> SqlSessionContext<T> managed() {
+    public SqlSessionContext managed() {
         return this.managed(ExecutorType.SIMPLE);
     }
 

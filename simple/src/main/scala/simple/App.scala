@@ -21,7 +21,9 @@ object App:
       RunScript.execute(ss.getConnection, new FileReader("./simple/src/main/resources/data.sql"))
     }
 
-    sqlSessionManager.readOnly().use { ss =>
+    val value = sqlSessionManager.readOnly()
+
+    value.use { ss =>
       val mapper = ss.getMapper(classOf[PersonMapper])
       println("selectAll: " + mapper.selectAll())
       println("selectAllName: " + mapper.selectAllName())
