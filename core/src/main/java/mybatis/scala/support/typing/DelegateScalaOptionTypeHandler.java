@@ -9,11 +9,11 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-public abstract class DelegateScalaOptionTypeHandler<T> implements TypeHandler<Option<T>> {
+public class DelegateScalaOptionTypeHandler<T> implements TypeHandler<Option<T>> {
 
     private final TypeHandler<T> typeHandler;
 
-    protected DelegateScalaOptionTypeHandler(TypeHandler<T> typeHandler) {
+    public DelegateScalaOptionTypeHandler(TypeHandler<T> typeHandler) {
         this.typeHandler = typeHandler;
     }
 

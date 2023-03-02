@@ -3,18 +3,20 @@ package mybatis.scala.support.objecting;
 import org.apache.ibatis.reflection.factory.DefaultObjectFactory;
 import scala.collection.mutable.*;
 
-public class ScalaDefaultObjectFactory extends DefaultObjectFactory {
+public class ScalaObjectFactory extends DefaultObjectFactory {
 
     @Override
     protected Class<?> resolveInterface(Class<?> type) {
-        Class<?> resolved = super.resolveInterface(type);
+        Class<?> resolved;
 
-        if (resolved == Seq.class) {
+        if (type == Seq.class) {
             resolved = ArrayBuffer.class;
-        } else if (resolved == Set.class) {
+        } else if (type == Set.class) {
             resolved = HashSet.class;
-        } else if (resolved == Map.class) {
+        } else if (type == Map.class) {
             resolved = HashMap.class;
+        } else {
+            resolved = super.resolveInterface(type);
         }
 
         return resolved;
@@ -22,8 +24,9 @@ public class ScalaDefaultObjectFactory extends DefaultObjectFactory {
 
     @Override
     public <T> boolean isCollection(Class<T> type) {
-        boolean collection = super.isCollection(type);
-        return collection || Seq.class.isAssignableFrom(type) || Set.class.isAssignableFrom(type);
+        return Seq.class.isAssignableFrom(type) ||
+                Set.class.isAssignableFrom(type) ||
+                super.isCollection(type);
     }
 
 }

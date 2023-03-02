@@ -3,6 +3,10 @@ plugins {
     id('application')
 }
 
+application {
+    mainClass = 'simple.App'
+}
+
 repositories {
     mavenCentral()
 }
@@ -16,8 +20,4 @@ dependencies {
     implementation('com.h2database:h2:2.1.214')
 
     testImplementation('org.scalameta:munit_3:1.0.0-M7')
-}
-
-application {
-    mainClass = 'simple.App'
 }

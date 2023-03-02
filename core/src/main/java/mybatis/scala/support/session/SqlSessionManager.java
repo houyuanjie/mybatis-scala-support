@@ -21,16 +21,13 @@ public class SqlSessionManager {
     }
 
     public SqlSessionContext readOnly(ExecutorType execType, TransactionIsolationLevel level) {
-        SqlSession sqlSession = sqlSessionFactory.openSession(execType, level);
-        return new SqlSessionContext(sqlSession) {
+        return new SqlSessionContext(() -> sqlSessionFactory.openSession(execType, level)) {
             @Override
-            public <T> T use(SqlSessionFunction<T> sqlSessionFunction) {
-                try {
+            public <T> T behavior(SqlSession sqlSession, SqlSessionFunction<T> sqlSessionFunction) {
+                try (sqlSession) {
                     T result = sqlSessionFunction.apply(sqlSession);
                     sqlSession.rollback();
                     return result;
-                } finally {
-                    sqlSession.close();
                 }
             }
         };
@@ -41,10 +38,10 @@ public class SqlSessionManager {
     }
 
     public SqlSessionContext transaction(SqlSession sqlSession) {
-        return new SqlSessionContext(sqlSession) {
+        return new SqlSessionContext(() -> sqlSession) {
             @Override
-            public <T> T use(SqlSessionFunction<T> sqlSessionFunction) {
-                try {
+            public <T> T behavior(SqlSession sqlSession, SqlSessionFunction<T> sqlSessionFunction) {
+                try (sqlSession) {
                     T result = sqlSessionFunction.apply(sqlSession);
                     sqlSession.commit();
                     return result;
@@ -56,8 +53,6 @@ public class SqlSessionManager {
                         throw rollbackException;
                     }
                     throw commitException;
-                } finally {
-                    sqlSession.close();
                 }
             }
         };
@@ -94,10 +89,9 @@ public class SqlSessionManager {
     }
 
     public SqlSessionContext managed(ExecutorType execType) {
-        SqlSession sqlSession = sqlSessionFactory.openSession(execType);
-        return new SqlSessionContext(sqlSession) {
+        return new SqlSessionContext(() -> sqlSessionFactory.openSession(execType)) {
             @Override
-            public <T> T use(SqlSessionFunction<T> sqlSessionFunction) {
+            public <T> T behavior(SqlSession sqlSession, SqlSessionFunction<T> sqlSessionFunction) {
                 try (sqlSession) {
                     return sqlSessionFunction.apply(sqlSession);
                 }

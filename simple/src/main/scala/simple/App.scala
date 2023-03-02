@@ -1,12 +1,13 @@
 package simple
 
-import mybatis.scala.support.session.SqlSessionManager
+import mybatis.scala.support.session.{SqlSessionContext, SqlSessionManager}
 import org.apache.ibatis.io.Resources
 import org.apache.ibatis.session.SqlSessionFactoryBuilder
 import org.h2.tools.RunScript
 import simple.mapper.PersonMapper
 
 import java.io.FileReader
+import scala.reflect.ClassTag
 
 object App:
 
@@ -21,14 +22,16 @@ object App:
       RunScript.execute(ss.getConnection, new FileReader("./simple/src/main/resources/data.sql"))
     }
 
-    val value = sqlSessionManager.readOnly()
-
-    value.use { ss =>
+    val readOnlyContext = sqlSessionManager.readOnly()
+    readOnlyContext.use { ss =>
       val mapper = ss.getMapper(classOf[PersonMapper])
+
       println("selectAll: " + mapper.selectAll())
       println("selectAllName: " + mapper.selectAllName())
-      println("selectOne(0): " + mapper.selectOne(0))
-      println("selectOne(1): " + mapper.selectOne(1))
+      val p0 = mapper.selectOne(0) // null
+      println("selectOne(0): " + p0)
+      val p1 = mapper.selectOne(1)
+      println("selectOne(1): " + p1)
       println("selectOne(2): " + mapper.selectOne(2))
       println("selectOne(3): " + mapper.selectOne(3))
       println("selectOne(4): " + mapper.selectOne(4))

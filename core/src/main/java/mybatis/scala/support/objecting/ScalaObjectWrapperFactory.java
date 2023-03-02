@@ -18,7 +18,9 @@ public class ScalaObjectWrapperFactory implements ObjectWrapperFactory {
 
     @Override
     public boolean hasWrapperFor(Object object) {
-        return object instanceof ArrayBuffer || object instanceof HashSet || object instanceof HashMap;
+        return object instanceof ArrayBuffer ||
+                object instanceof HashSet ||
+                object instanceof HashMap;
     }
 
     @SuppressWarnings("unchecked")
@@ -36,8 +38,8 @@ public class ScalaObjectWrapperFactory implements ObjectWrapperFactory {
             objectWrapper = new CollectionWrapper(metaObject, (Set<Object>) set);
         } else if (object instanceof HashMap) {
             HashMap<?, ?> hashMap = (HashMap<?, ?>) object;
-            Map<String, Object> map = (Map<String, Object>) CollectionConverters.MutableMapHasAsJava(hashMap).asJava();
-            objectWrapper = new MapWrapper(metaObject, map);
+            Map<?, ?> map = CollectionConverters.MutableMapHasAsJava(hashMap).asJava();
+            objectWrapper = new MapWrapper(metaObject, (Map<String, Object>) map);
         } else {
             throw new IllegalArgumentException("Type (" + object.getClass().getName() + ") is NOT supported.");
         }

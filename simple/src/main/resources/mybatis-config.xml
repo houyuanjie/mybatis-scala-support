@@ -6,7 +6,7 @@
     <typeHandlers>
         <package name="mybatis.scala.support.typing.typehandlers"/>
     </typeHandlers>
-    <objectFactory type="mybatis.scala.support.objecting.ScalaDefaultObjectFactory"/>
+    <objectFactory type="mybatis.scala.support.objecting.ScalaObjectFactory"/>
     <objectWrapperFactory type="mybatis.scala.support.objecting.ScalaObjectWrapperFactory"/>
 
     <environments default="simple">
