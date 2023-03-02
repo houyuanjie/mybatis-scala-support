@@ -1,3 +1,4 @@
 rootProject.name = 'mybatis-scala-support'
 include('core')
+include('config')
 include('simple')

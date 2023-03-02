@@ -20,6 +20,7 @@ object App:
     sqlSessionManager.managed().use { ss =>
       RunScript.execute(ss.getConnection, new FileReader("./simple/src/main/resources/schema.sql"))
       RunScript.execute(ss.getConnection, new FileReader("./simple/src/main/resources/data.sql"))
+      ss.close()
     }
 
     val readOnlyContext = sqlSessionManager.readOnly()

@@ -1,0 +1,31 @@
+plugins {
+    id('java-library')
+    id('scala')
+}
+
+java {
+    sourceCompatibility = JavaVersion.VERSION_11
+    targetCompatibility = JavaVersion.VERSION_11
+}
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    api(project(':core'))
+
+    api('org.scala-lang:scala3-library_3:3.2.2')
+    api('org.mybatis:mybatis:3.5.12')
+}
+
+tasks.withType(ScalaCompile).configureEach {
+    scalaCompileOptions.with {
+        force = true
+        additionalParameters = [
+                '-encoding', 'utf8',
+                '-release:11',
+                '-Werror', '-deprecation', '-feature', '-unchecked'
+        ]
+    }
+}
