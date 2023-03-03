@@ -13,10 +13,10 @@ import javax.sql.DataSource
   */
 type With[Context] = Context ?=> Unit
 
-def configuration(procedure: With[ConfigurationBuilder]): Configuration =
+def configuration(procedure: With[ConfigurationBuilder]): ConfigurationBuilder =
   val configurationBuilder = new ConfigurationBuilder
   procedure(using configurationBuilder)
-  configurationBuilder.build()
+  configurationBuilder
 
 def environments(default: String)(procedure: With[EnvironmentsBuilder])(using
     configurationBuilder: ConfigurationBuilder

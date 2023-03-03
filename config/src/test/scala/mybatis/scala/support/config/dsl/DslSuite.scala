@@ -44,7 +44,7 @@ class DslSuite extends FunSuite:
             dataSource = fakeDataSource
           )
         }
-      }
+      }.build()
 
     val expected =
       new Configuration(new Environment("test2", fakeTransactionFactory, fakeDataSource))
