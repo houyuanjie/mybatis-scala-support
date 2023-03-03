@@ -1,6 +1,6 @@
 package mybatis.scala.support.config.builder
 
-import mybatis.scala.support.config.model.Environments
+import mybatis.scala.support.config.model.*
 import mybatis.scala.support.objecting.{ScalaObjectFactory, ScalaObjectWrapperFactory}
 import org.apache.ibatis.reflection.factory.ObjectFactory
 import org.apache.ibatis.reflection.wrapper.ObjectWrapperFactory
@@ -15,9 +15,12 @@ class ConfigurationBuilder extends Builder[Configuration]:
 
   private var objectFactory: ObjectFactory = new ScalaObjectFactory
   private var objectWrapperFactory: ObjectWrapperFactory = new ScalaObjectWrapperFactory
-  private var environments: Environments = new Environments(default = "default", vector = Vector.empty)
+  private var typeHandlers: TypeHandlers = new TypeHandlers(
+    vector = Vector(new PackageTypeHandler(packageName = "mybatis.scala.support.typing.typehandlers"))
+  )
+  private var environments: Environments = new Environments(defaultEnvironmentId = "default", vector = Vector.empty)
 
-  // setter
+  // update
 
   def setObjectFactory(objectFactory: ObjectFactory): Unit =
     this.objectFactory = objectFactory
@@ -25,31 +28,52 @@ class ConfigurationBuilder extends Builder[Configuration]:
   def setObjectWrapperFactory(objectWrapperFactory: ObjectWrapperFactory): Unit =
     this.objectWrapperFactory = objectWrapperFactory
 
+  def setTypeHandlers(typeHandlers: TypeHandlers): Unit =
+    this.typeHandlers = typeHandlers
+
   def setEnvironments(environments: Environments): Unit =
     this.environments = environments
 
   // override
 
   override def build(): Configuration =
-    val defaultEnvironmentId = this.environments.default
+    val defaultEnvironmentId = this.environments.defaultEnvironmentId
     build(defaultEnvironmentId)
 
   def build(defaultEnvironmentId: String): Configuration =
     val configuration = new Configuration()
 
-    doSetEnvironment(configuration, defaultEnvironmentId, environments)
+    configuration.setObjectFactory(this.objectFactory)
+    configuration.setObjectWrapperFactory(this.objectWrapperFactory)
+    doRegistryTypeHandlers(configuration, this.typeHandlers)
+    doSetEnvironment(configuration, defaultEnvironmentId, this.environments)
 
     configuration
 
   // private
 
-  private def doSetEnvironment(configuration: Configuration, default: String, environments: Environments): Unit =
+  private def doRegistryTypeHandlers(
+      configuration: Configuration,
+      typeHandlers: TypeHandlers
+  ): Unit =
+    val typeHandlerRegistry = configuration.getTypeHandlerRegistry
+    for (th <- typeHandlers.vector) do
+      th match
+        case cth: ConcreteTypeHandler[?] => typeHandlerRegistry.register(cth.javaType, cth.jdbcType, cth.typeHandler)
+        case pth: PackageTypeHandler     => typeHandlerRegistry.register(pth.packageName)
+
+  private def doSetEnvironment(
+      configuration: Configuration,
+      defaultEnvironmentId: String,
+      environments: Environments
+  ): Unit =
     if environments.vector.isEmpty then throw new IllegalStateException("Please define at least one Environment")
 
-    val filtered = for (env <- environments.vector if env.getId == default) yield env
+    val filtered = for (env <- environments.vector if env.getId == defaultEnvironmentId) yield env
 
-    if filtered.isEmpty then throw new IllegalStateException(s"Could NOT found an Environment with id=$default")
+    if filtered.isEmpty then
+      throw new IllegalStateException(s"Could NOT found an Environment with id=$defaultEnvironmentId")
     else if filtered.size == 1 then
       val env = filtered.head
       configuration.setEnvironment(env)
-    else throw new IllegalStateException(s"Found multiple Environments where id=$default")
+    else throw new IllegalStateException(s"Found multiple Environments where id=$defaultEnvironmentId")

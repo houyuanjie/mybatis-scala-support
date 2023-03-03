@@ -20,4 +20,4 @@ class EnvironmentsBuilder(default: String) extends Builder[Environments]:
   // override
 
   override def build(): Environments =
-    Environments(default, environmentVector)
+    new Environments(default, environmentVector)

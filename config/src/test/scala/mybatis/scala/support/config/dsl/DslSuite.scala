@@ -1,6 +1,7 @@
 package mybatis.scala.support.config.dsl
 
 import munit.*
+import mybatis.scala.support.objecting.ScalaObjectFactory
 import org.apache.ibatis.mapping.Environment
 import org.apache.ibatis.reflection.factory.DefaultObjectFactory
 import org.apache.ibatis.reflection.wrapper.DefaultObjectWrapperFactory
@@ -31,7 +32,7 @@ class DslSuite extends FunSuite:
 
     val obtained =
       configuration {
-        objectFactory := new DefaultObjectFactory
+        objectFactory := new ScalaObjectFactory
         objectWrapperFactory := new DefaultObjectWrapperFactory
 
         environments("test2") {
@@ -48,6 +49,8 @@ class DslSuite extends FunSuite:
 
     val expected =
       new Configuration(new Environment("test2", fakeTransactionFactory, fakeDataSource))
+
+    expected.setObjectFactory(new ScalaObjectFactory)
 
     assertEquals(obtained.getEnvironment.getId, expected.getEnvironment.getId)
     assertEquals(obtained.getEnvironment.getTransactionFactory, expected.getEnvironment.getTransactionFactory)

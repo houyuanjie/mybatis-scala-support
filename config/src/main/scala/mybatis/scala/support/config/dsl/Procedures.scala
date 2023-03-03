@@ -1,6 +1,8 @@
 package mybatis.scala.support.config.dsl
 
-import mybatis.scala.support.config.builder.{Builder, ConfigurationBuilder, EnvironmentsBuilder}
+import mybatis.scala.support.config.builder.*
+import mybatis.scala.support.config.model.*
+import org.apache.ibatis.`type`.{JdbcType, TypeHandler}
 import org.apache.ibatis.mapping.Environment
 import org.apache.ibatis.session.Configuration
 import org.apache.ibatis.transaction.TransactionFactory
@@ -9,22 +11,52 @@ import javax.sql.DataSource
 
 /** Context Procedure
   * @tparam Context
-  *   Needed type to perform this procedure
+  *   Using Context type to perform this procedure
   */
 type With[Context] = Context ?=> Unit
+
+// ROOT -> configuration
 
 def configuration(procedure: With[ConfigurationBuilder]): ConfigurationBuilder =
   val configurationBuilder = new ConfigurationBuilder
   procedure(using configurationBuilder)
   configurationBuilder
 
-def environments(default: String)(procedure: With[EnvironmentsBuilder])(using
+// ROOT -> configuration -> typeHandlers
+
+def typeHandlers(procedure: With[TypeHandlersBuilder])(using
     configurationBuilder: ConfigurationBuilder
 ): Unit =
-  val environmentsBuilder = new EnvironmentsBuilder(default)
+  val typeHandlersBuilder = new TypeHandlersBuilder
+  procedure(using typeHandlersBuilder)
+  val typeHandlers = typeHandlersBuilder.build()
+  configurationBuilder.setTypeHandlers(typeHandlers)
+
+// ROOT -> configuration -> typeHandlers -> typeHandler
+
+def typeHandler[T](typeHandler: TypeHandler[T], javaType: Class[T], jdbcType: JdbcType)(using
+    typeHandlersBuilder: TypeHandlersBuilder
+): Unit =
+  val concreteTypeHandler = new ConcreteTypeHandler(typeHandler, javaType, jdbcType)
+  typeHandlersBuilder.appendTypeHandlerModel(concreteTypeHandler)
+
+// ROOT -> configuration -> typeHandlers -> typeHandler
+
+def typeHandler(packageName: String)(using typeHandlersBuilder: TypeHandlersBuilder): Unit =
+  val packageTypeHandler = new PackageTypeHandler(packageName)
+  typeHandlersBuilder.appendTypeHandlerModel(packageTypeHandler)
+
+// ROOT -> configuration -> environments
+
+def environments(defaultId: String)(procedure: With[EnvironmentsBuilder])(using
+    configurationBuilder: ConfigurationBuilder
+): Unit =
+  val environmentsBuilder = new EnvironmentsBuilder(defaultId)
   procedure(using environmentsBuilder)
   val environments = environmentsBuilder.build()
   configurationBuilder.setEnvironments(environments)
+
+// ROOT -> configuration -> environments -> environment
 
 def environment(id: String)(transactionFactory: TransactionFactory, dataSource: DataSource)(using
     environmentsBuilder: EnvironmentsBuilder
