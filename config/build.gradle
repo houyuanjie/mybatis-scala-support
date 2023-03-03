@@ -17,6 +17,8 @@ dependencies {
 
     api('org.scala-lang:scala3-library_3:3.2.2')
     api('org.mybatis:mybatis:3.5.12')
+
+    testImplementation('org.scalameta:munit_3:1.0.0-M7')
 }
 
 tasks.withType(ScalaCompile).configureEach {
