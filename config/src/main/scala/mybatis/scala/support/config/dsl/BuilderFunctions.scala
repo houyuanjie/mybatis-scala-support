@@ -1,5 +1,6 @@
 package mybatis.scala.support.config.dsl
 
+import mybatis.scala.support.config.builder.{ConfigurationBuilder, EnvironmentsBuilder}
 import org.apache.ibatis.mapping.Environment
 import org.apache.ibatis.session.Configuration
 import org.apache.ibatis.transaction.TransactionFactory
@@ -22,6 +23,6 @@ def environments(default: String)(
 def environment(id: String)(
     transactionFactory: TransactionFactory,
     dataSource: DataSource
-)(using esb: EnvironmentsBuilder): Unit =
+)(using environmentsBuilder: EnvironmentsBuilder): Unit =
   val environment = new Environment(id, transactionFactory, dataSource)
-  esb.addEnvironment(environment)
+  environmentsBuilder.appendEnvironment(environment)

@@ -13,11 +13,11 @@ public abstract class SqlSessionContext {
     }
 
     public SqlSession getSqlSession() {
-        return sqlSessionSupplier.get();
+        return this.sqlSessionSupplier.get();
     }
 
     public <T> T use(SqlSessionFunction<T> sqlSessionFunction) {
-        SqlSession sqlSession = sqlSessionSupplier.get();
+        SqlSession sqlSession = this.getSqlSession();
         return behavior(sqlSession, sqlSessionFunction);
     }
 
