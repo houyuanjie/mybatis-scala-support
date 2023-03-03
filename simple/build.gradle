@@ -15,6 +15,7 @@ dependencies {
     implementation('org.scala-lang:scala3-library_3:3.2.2')
 
     implementation(project(':core'))
+    implementation(project(':config'))
 
     implementation('org.mybatis:mybatis:3.5.12')
     implementation('com.h2database:h2:2.1.214')

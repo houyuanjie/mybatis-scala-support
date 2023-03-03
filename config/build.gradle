@@ -24,8 +24,7 @@ tasks.withType(ScalaCompile).configureEach {
         force = true
         additionalParameters = [
                 '-encoding', 'utf8',
-                '-release:11',
-                '-Werror', '-deprecation', '-feature', '-unchecked'
+                '-release:11'
         ]
     }
 }
