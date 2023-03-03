@@ -15,7 +15,7 @@ class ConfigurationBuilder extends Builder[Configuration]:
 
   private var objectFactory: ObjectFactory = new ScalaObjectFactory
   private var objectWrapperFactory: ObjectWrapperFactory = new ScalaObjectWrapperFactory
-  private var environments: Environments = Environments()
+  private var environments: Environments = new Environments(default = "default", vector = Vector.empty)
 
   // setter
 
@@ -44,9 +44,9 @@ class ConfigurationBuilder extends Builder[Configuration]:
   // private
 
   private def doSetEnvironment(configuration: Configuration, default: String, environments: Environments): Unit =
-    if environments.seq.isEmpty then throw new IllegalStateException("Please define at least one Environment")
+    if environments.vector.isEmpty then throw new IllegalStateException("Please define at least one Environment")
 
-    val filtered = for (env <- environments.seq if env.getId == default) yield env
+    val filtered = for (env <- environments.vector if env.getId == default) yield env
 
     if filtered.isEmpty then throw new IllegalStateException(s"Could NOT found an Environment with id=$default")
     else if filtered.size == 1 then
