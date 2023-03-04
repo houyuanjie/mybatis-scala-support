@@ -56,7 +56,7 @@ class ConfigurationBuilder extends Builder[Configuration]:
       typeHandlers: Vector[TypeHandlerModel]
   ): Unit =
     val typeHandlerRegistry = configuration.getTypeHandlerRegistry
-    for (th <- typeHandlers) do
+    for th <- typeHandlers do
       th match
         case cth: ConcreteTypeHandler[?] => typeHandlerRegistry.register(cth.javaType, cth.jdbcType, cth.typeHandler)
         case pth: PackageTypeHandler     => typeHandlerRegistry.register(pth.packageName)
@@ -68,7 +68,7 @@ class ConfigurationBuilder extends Builder[Configuration]:
   ): Unit =
     if environments.vector.isEmpty then throw new IllegalStateException("Please define at least one Environment")
 
-    val filtered = for (env <- environments.vector if env.getId == defaultEnvironmentId) yield env
+    val filtered = for env <- environments.vector if env.getId == defaultEnvironmentId yield env
 
     if filtered.isEmpty then
       throw new IllegalStateException(s"Could NOT found an Environment with id=$defaultEnvironmentId")
