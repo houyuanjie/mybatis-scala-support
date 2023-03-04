@@ -10,8 +10,8 @@ import org.apache.ibatis.transaction.TransactionFactory
 import javax.sql.DataSource
 
 /** Context Procedure
-  * @tparam Context
-  *   Using Context type to perform this procedure
+  *
+  * Using Context type to perform this procedure
   */
 type With[Context] = Context ?=> Unit
 
@@ -30,7 +30,7 @@ def typeHandlers(procedure: With[TypeHandlersBuilder])(using
   val typeHandlersBuilder = new TypeHandlersBuilder
   procedure(using typeHandlersBuilder)
   val typeHandlers = typeHandlersBuilder.build()
-  configurationBuilder.setTypeHandlers(typeHandlers)
+  configurationBuilder.appendAllTypeHandlers(typeHandlers)
 
 // ROOT -> configuration -> typeHandlers -> typeHandler
 
@@ -38,13 +38,13 @@ def typeHandler[T](typeHandler: TypeHandler[T], javaType: Class[T], jdbcType: Jd
     typeHandlersBuilder: TypeHandlersBuilder
 ): Unit =
   val concreteTypeHandler = new ConcreteTypeHandler(typeHandler, javaType, jdbcType)
-  typeHandlersBuilder.appendTypeHandlerModel(concreteTypeHandler)
+  typeHandlersBuilder.appendTypeHandler(concreteTypeHandler)
 
 // ROOT -> configuration -> typeHandlers -> typeHandler
 
 def typeHandler(packageName: String)(using typeHandlersBuilder: TypeHandlersBuilder): Unit =
   val packageTypeHandler = new PackageTypeHandler(packageName)
-  typeHandlersBuilder.appendTypeHandlerModel(packageTypeHandler)
+  typeHandlersBuilder.appendTypeHandler(packageTypeHandler)
 
 // ROOT -> configuration -> environments
 

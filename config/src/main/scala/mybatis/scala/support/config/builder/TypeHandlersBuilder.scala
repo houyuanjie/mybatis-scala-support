@@ -1,22 +1,22 @@
 package mybatis.scala.support.config.builder
 
-import mybatis.scala.support.config.model.{TypeHandlerModel, TypeHandlers}
+import mybatis.scala.support.config.model.TypeHandlerModel
 
 import scala.annotation.implicitNotFound
 
 @implicitNotFound("Please put me inside 'dsl.typeHandlers' or give me a 'builder.TypeHandlersBuilder'")
-class TypeHandlersBuilder extends Builder[TypeHandlers]:
+class TypeHandlersBuilder extends Builder[Vector[TypeHandlerModel]]:
 
   // field
 
-  private var typeHandlerModelVector: Vector[TypeHandlerModel] = Vector.empty
+  private var typeHandlers: Vector[TypeHandlerModel] = Vector.empty
 
   // update
 
-  def appendTypeHandlerModel(typeHandlerModel: TypeHandlerModel): Unit =
-    this.typeHandlerModelVector = this.typeHandlerModelVector.appended(typeHandlerModel)
+  def appendTypeHandler(typeHandlerModel: TypeHandlerModel): Unit =
+    this.typeHandlers = this.typeHandlers.appended(typeHandlerModel)
 
   // override
 
-  override def build(): TypeHandlers =
-    new TypeHandlers(this.typeHandlerModelVector)
+  override def build(): Vector[TypeHandlerModel] =
+    this.typeHandlers

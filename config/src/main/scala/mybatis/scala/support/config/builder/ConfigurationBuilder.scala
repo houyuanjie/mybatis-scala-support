@@ -15,9 +15,8 @@ class ConfigurationBuilder extends Builder[Configuration]:
 
   private var objectFactory: ObjectFactory = new ScalaObjectFactory
   private var objectWrapperFactory: ObjectWrapperFactory = new ScalaObjectWrapperFactory
-  private var typeHandlers: TypeHandlers = new TypeHandlers(
-    vector = Vector(new PackageTypeHandler(packageName = "mybatis.scala.support.typing.typehandlers"))
-  )
+  private var typeHandlers: Vector[TypeHandlerModel] =
+    Vector(new PackageTypeHandler(packageName = "mybatis.scala.support.typing.typehandlers"))
   private var environments: Environments = new Environments(defaultEnvironmentId = "default", vector = Vector.empty)
 
   // update
@@ -28,8 +27,8 @@ class ConfigurationBuilder extends Builder[Configuration]:
   def setObjectWrapperFactory(objectWrapperFactory: ObjectWrapperFactory): Unit =
     this.objectWrapperFactory = objectWrapperFactory
 
-  def setTypeHandlers(typeHandlers: TypeHandlers): Unit =
-    this.typeHandlers = typeHandlers
+  def appendAllTypeHandlers(typeHandlers: Vector[TypeHandlerModel]): Unit =
+    this.typeHandlers = this.typeHandlers.appendedAll(typeHandlers)
 
   def setEnvironments(environments: Environments): Unit =
     this.environments = environments
@@ -54,10 +53,10 @@ class ConfigurationBuilder extends Builder[Configuration]:
 
   private def doRegistryTypeHandlers(
       configuration: Configuration,
-      typeHandlers: TypeHandlers
+      typeHandlers: Vector[TypeHandlerModel]
   ): Unit =
     val typeHandlerRegistry = configuration.getTypeHandlerRegistry
-    for (th <- typeHandlers.vector) do
+    for (th <- typeHandlers) do
       th match
         case cth: ConcreteTypeHandler[?] => typeHandlerRegistry.register(cth.javaType, cth.jdbcType, cth.typeHandler)
         case pth: PackageTypeHandler     => typeHandlerRegistry.register(pth.packageName)

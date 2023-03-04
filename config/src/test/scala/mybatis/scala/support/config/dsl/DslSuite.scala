@@ -2,6 +2,8 @@ package mybatis.scala.support.config.dsl
 
 import munit.*
 import mybatis.scala.support.objecting.ScalaObjectFactory
+import mybatis.scala.support.typing.typehandlers.StringOptionTypeHandler
+import org.apache.ibatis.`type`.JdbcType
 import org.apache.ibatis.mapping.Environment
 import org.apache.ibatis.reflection.factory.DefaultObjectFactory
 import org.apache.ibatis.reflection.wrapper.DefaultObjectWrapperFactory
@@ -51,10 +53,13 @@ class DslSuite extends FunSuite:
       new Configuration(new Environment("test2", fakeTransactionFactory, fakeDataSource))
 
     expected.setObjectFactory(new ScalaObjectFactory)
+    expected.getTypeHandlerRegistry.register("mybatis.scala.support.typing.typehandlers")
 
     assertEquals(obtained.getEnvironment.getId, expected.getEnvironment.getId)
     assertEquals(obtained.getEnvironment.getTransactionFactory, expected.getEnvironment.getTransactionFactory)
     assertEquals(obtained.getEnvironment.getDataSource, expected.getEnvironment.getDataSource)
     assertEquals(obtained.getObjectFactory.getClass, expected.getObjectFactory.getClass)
     assertEquals(obtained.getObjectWrapperFactory.getClass, expected.getObjectWrapperFactory.getClass)
+    assert(expected.getTypeHandlerRegistry.hasTypeHandler(classOf[Option[?]], JdbcType.VARCHAR))
+    assert(obtained.getTypeHandlerRegistry.hasTypeHandler(classOf[Option[?]], JdbcType.VARCHAR))
   }

@@ -13,7 +13,7 @@ repositories {
 }
 
 dependencies {
-    api(project(':core'))
+    implementation(project(':core'))
 
     api('org.scala-lang:scala3-library_3:3.2.2')
     api('org.mybatis:mybatis:3.5.12')
@@ -24,6 +24,10 @@ dependencies {
 tasks.withType(ScalaCompile).configureEach {
     scalaCompileOptions.with {
         force = true
+        forkOptions.with {
+            memoryInitialSize = '512m'
+            memoryMaximumSize = '4g'
+        }
         additionalParameters = [
                 '-encoding', 'utf8',
                 '-release:11'
