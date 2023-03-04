@@ -42,7 +42,9 @@ def typeHandler[T](typeHandler: TypeHandler[T], javaType: Class[T], jdbcType: Jd
 
 // ROOT -> configuration -> typeHandlers -> typeHandler
 
-def typeHandler(packageName: String)(using typeHandlersBuilder: TypeHandlersBuilder): Unit =
+def typeHandler(packageName: String)(using
+    typeHandlersBuilder: TypeHandlersBuilder
+): Unit =
   val packageTypeHandler = new PackageTypeHandler(packageName)
   typeHandlersBuilder.appendTypeHandler(packageTypeHandler)
 

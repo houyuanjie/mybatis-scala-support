@@ -17,7 +17,7 @@ class ConfigurationBuilder extends Builder[Configuration]:
   private var objectWrapperFactory: ObjectWrapperFactory = new ScalaObjectWrapperFactory
   private var typeHandlers: Vector[TypeHandlerModel] =
     Vector(new PackageTypeHandler(packageName = "mybatis.scala.support.typing.typehandlers"))
-  private var environments: Environments = new Environments(defaultEnvironmentId = "default", vector = Vector.empty)
+  private var environments: Environments = new Environments(defaultId = "default", vector = Vector.empty)
 
   // update
 
@@ -36,7 +36,7 @@ class ConfigurationBuilder extends Builder[Configuration]:
   // override
 
   override def build(): Configuration =
-    val defaultEnvironmentId = this.environments.defaultEnvironmentId
+    val defaultEnvironmentId = this.environments.defaultId
     build(defaultEnvironmentId)
 
   def build(defaultEnvironmentId: String): Configuration =

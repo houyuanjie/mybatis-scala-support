@@ -6,7 +6,7 @@ import org.apache.ibatis.mapping.Environment
 import scala.annotation.implicitNotFound
 
 @implicitNotFound("Please put me inside 'dsl.environments' or give me a 'builder.EnvironmentsBuilder'")
-class EnvironmentsBuilder(default: String) extends Builder[Environments]:
+class EnvironmentsBuilder(defaultId: String) extends Builder[Environments]:
 
   // field
 
@@ -20,4 +20,4 @@ class EnvironmentsBuilder(default: String) extends Builder[Environments]:
   // override
 
   override def build(): Environments =
-    new Environments(default, environmentVector)
+    new Environments(defaultId, environmentVector)
